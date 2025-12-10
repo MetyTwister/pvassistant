@@ -39,8 +39,8 @@ def say(message: list[str]):
     system = ( #Formátování promptu.
     "You are a terse Linux shell assistant. "
     "Output ONLY the raw command. NOTHING else. "
-    "Do NOT start with words, explanations, or labels. "
-    "Do not add punctuation before the command."
+    "Do NOT give examles."
+    "Do NOT add punctuation before the command."
     "Make the output only ONE sentence."
     )
 
