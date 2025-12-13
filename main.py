@@ -11,14 +11,14 @@ app = typer.Typer()
 
 def say(message: list[str]):
 
-    if getattr(sys, 'frozen', False): #Konstrukce absolutní cesty k modelu -> Spouštím jako .exe nebo .py?
+    if getattr(sys, 'frozen', False): #Construction of absolute path to the model. Is file .exe or .py?
         BASE_DIR = os.path.dirname(sys.executable)
     else:
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     model_path = os.path.join(BASE_DIR, "models", "deepseek-coder-1.3b-instruct.Q4_K_M.gguf")
 
-    @contextlib.contextmanager #Výstup vyčistit od errorů a stats -> stderr se zahodí.
+    @contextlib.contextmanager #Clean the output from errors and stats -> stderr will get thrown away.
     def suppress_stderr():
         with open(os.devnull, "w") as devnull:
             old_stderr = sys.stderr
@@ -28,7 +28,7 @@ def say(message: list[str]):
             finally:
                 sys.stderr = old_stderr
 
-    with suppress_stderr(): #Inicializace Llama
+    with suppress_stderr(): #Inicialization of Llama
         llm = Llama(
             model_path=model_path,
             n_ctx=1024,
@@ -36,7 +36,7 @@ def say(message: list[str]):
             log_level="ERROR"
         )
 
-    system = ( #Formátování promptu.
+    system = ( #Prompt formatting
     "You are a terse Linux shell assistant. "
     "Output ONLY the raw command. NOTHING else. "
     "Do NOT give examles."
@@ -46,17 +46,18 @@ def say(message: list[str]):
 
     prompt = f"<|system|>{system}<|user|>{' '.join(message)}<|assistant|>"
 
-    with suppress_stderr(): #Parametry pro prompt/odpověď.
+    with suppress_stderr(): #Prompt parameters
         output = llm(
             prompt,
             max_tokens=100,
             temperature=0.2,
             top_p=0.8,
             repeat_penalty=1.2,
-            stop=["<|user|>", "<|system|>", "\n\n"] #<-- Tohle chce doladit!!! (občas se odpověd skryje za <system>!!)
+            stop=["<|user|>", "<|system|>", "\n\n"] #<-- This need tuning!!! (Sometimes the respose hides after <system>!!)
         )
 
-    print("💬", output["choices"][0]["text"].strip()) #Zobrazí a vyčistí výstup.
+    print("💬", output["choices"][0]["text"].strip()) #Cleans and prints output
 
 if __name__ == "__main__":
+
     app()
