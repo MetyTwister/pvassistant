@@ -93,8 +93,8 @@ def say(message: list[str]):
     out = result_holder["out"]["choices"][0]["text"].strip()
 
     print("💬", out)
-    #print("💬", output["choices"][0]["text"].strip()) #Cleans and prints output
 
 if __name__ == "__main__":
 
     app()
+
